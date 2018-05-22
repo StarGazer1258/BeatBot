@@ -10,5 +10,10 @@
     "tmi.js": "^1.2.1",
     "request": "^1.0.5"
   },
-  "author": "Nathaniel Johns (StarGazer1258)"
+  "author": "Nathaniel Johns (StarGazer1258)",
+  "repository" : {
+    "type" : "git",
+    "url" : "https://github.com/StarGazer1258/BeatBot.git"
+  },
+  "license": "GPL-3.0-only"
 }
