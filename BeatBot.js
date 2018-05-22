@@ -1,5 +1,8 @@
 const tmi = require('tmi.js')
 const request = require('request')
+const pattern = require('./pattern.json')
+
+const version = '0.1.0'
 
 var options = {
 	options: {
@@ -9,10 +12,67 @@ var options = {
 		reconnect: true
 	},
 	identity: {
-		username: 'YOUR_USERNAME_HERE',
-		password: 'YOUR_TOKEN_HERE'
+		username: 'BOT_USERNAME_HERE',
+		password: 'BOT_TOKEN_HERE'
 	},
     channels: ['#YOUR_CHANNEL_HERE']
+}
+
+function getPatternizedMessage(beatmapInfo) {
+	var message = ''
+	for(let i = 0; i < pattern.length; i++) {
+		switch(pattern[i]) {
+			//TODO Escape HTML codes
+			case '$authorName':
+				message += beatmapInfo['authorName']
+				break
+			case '$beatname':
+				message += beatmapInfo['beatname']
+				break
+			case '$beatsPerMinute':
+				message += beatmapInfo['beatsPerMinute']
+				break
+			case '$beatText':
+				message += beatmapInfo['beattext']
+				break
+			case '$downloadLink':
+				message += 'https://beatsaver.com/dl.php?id=' + beatmapInfo['id']
+				break
+			case '$downloads':
+				message += beatmapInfo['downloads']
+				break
+			case '$id':
+				message += beatmapInfo['id']
+				break
+			case '$ownerID':
+				message += beatmapInfo['ownerid']
+				break
+			case '$plays':
+				message += beatmapInfo['plays']
+				break
+			case '$songName':
+				message += beatmapInfo['songName']
+				break
+			case '$songSubName':
+				message += beatmapInfo['songSubName']
+				break
+			case '$uploadTime':
+				//TODO Format epoch time to standard date format
+				message += beatmapInfo['uploadtime']
+				break
+			case '$upvotes':
+				message += beatmapInfo['upvotes']
+				break
+			case '$webLink':
+				message += 'https://beatsaver.com/details.php?id=' + beatmapInfo['id']
+				break
+			default:
+				message += pattern[i]
+				break
+		}
+	}
+
+	return message
 }
 
 var client = new tmi.client(options)
@@ -35,7 +95,7 @@ client.on('chat', function(channel, userstate, message, self) {
 					url: 'https://beatsaver.com/search.php?q=' + q,
 					method: 'GET',
 					headers: {
-						'User-Agent': 'BeatBot/0.0.1',
+						'User-Agent': 'BeatBot/' + version,
 						'Content-Type': 'application/json'
 					}},
 					function(err, res, body) {
@@ -46,13 +106,13 @@ client.on('chat', function(channel, userstate, message, self) {
 								url: 'https://beatsaver.com/api.php?mode=details&id=' + id,
 								method: 'GET',
 								headers: {
-									'User-Agent': 'BeatBot/0.0.1',
+									'User-Agent': 'BeatBot/' + version,
 									'Content-Type': 'application/json'
 								}},
 								function(err, res, body) {
 									if(!err && res.statusCode == 200) {
 										let beatmapInfo = JSON.parse(body)[0]
-										client.say(channel, '♫ ' + beatmapInfo['beatname'] + ' | ' + beatmapInfo['downloads'] + ' Downloads | ' + beatmapInfo['upvotes'] + ' upvotes | https://beatsaver.com/dl.php?id=' + id + ' ♫')
+										client.say(channel, getPatternizedMessage(beatmapInfo))
 									} else {
 										console.log('Error ' + res.statusCode)
 									}
@@ -70,4 +130,4 @@ client.on('chat', function(channel, userstate, message, self) {
 		default:
 			break
 	}
-});
+})

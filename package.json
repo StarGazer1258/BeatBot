@@ -1,7 +1,7 @@
 {
   "name": "beatbot",
-  "version": "0.0.1",
-  "description": "Twitch bot for BeatSa(b/v)er",
+  "version": "0.1.0",
+  "description": "A Twitch.tv bot for BeatSa(b/v)er",
   "main": "BeatBot.js",
   "scripts": {
     "start": "node BeatBot.js"
@@ -15,5 +15,5 @@
     "type" : "git",
     "url" : "https://github.com/StarGazer1258/BeatBot.git"
   },
-  "license": "GPL-3.0-only"
+  "license": "GPL-3.0"
 }
