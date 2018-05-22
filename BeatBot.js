@@ -80,16 +80,39 @@ var client = new tmi.client(options)
 client.connect()
 
 client.on('chat', function(channel, userstate, message, self) {
+	const args = message.split(' ')
+
 	if(self) return
 
 	let prefix = '!'
 
-	switch(message.split(' ')[0]) {
+	switch(args[0]) {
 		case prefix + 'beatrequest':
-			if(message.split(' ').length > 1) {
+			if(args.length > 1) {
+				if(args.length == 2) {
+					if(!isNaN(args[1]) && parseInt(Number(args[1])) == args[1] && !isNaN(parseInt(args[1], 10))) {
+						request({
+							url: 'https://beatsaver.com/api.php?mode=details&id=' + args[1],
+							method: 'GET',
+							headers: {
+								'User-Agent': 'BeatBot/' + version,
+								'Content-Type': 'application/json'
+							}},
+							function(err, res, body) {
+								if(!err && res.statusCode == 200) {
+									let beatmapInfo = JSON.parse(body)[0]
+									client.say(channel, getPatternizedMessage(beatmapInfo))
+								} else {
+									console.log('Error ' + res.statusCode)
+								}
+							}
+						)
+					}
+					break
+				}
 				var q = ''
-				for(let i = 1; i < message.split(' ').length; i++) {
-					q += message.split(' ')[i] + '%20'
+				for(let i = 1; i < args.length; i++) {
+					q += args[i] + '%20'
 				}
 				request({
 					url: 'https://beatsaver.com/search.php?q=' + q,
