@@ -1,0 +1,14 @@
+{
+  "name": "beatbot",
+  "version": "0.0.1",
+  "description": "Twitch bot for BeatSa(b/v)er",
+  "main": "BeatBot.js",
+  "scripts": {
+    "start": "node BeatBot.js"
+  },
+  "dependencies": {
+    "tmi.js": "^1.2.1",
+    "request": "^1.0.5"
+  },
+  "author": "Nathaniel Johns (StarGazer1258)"
+}
