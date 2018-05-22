@@ -1,6 +1,6 @@
 {
   "name": "beatbot",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "A Twitch.tv bot for BeatSa(b/v)er",
   "main": "BeatBot.js",
   "scripts": {

@@ -2,7 +2,7 @@ const tmi = require('tmi.js')
 const request = require('request')
 const pattern = require('./pattern.json')
 
-const version = '0.1.0'
+const version = '0.1.2'
 
 var options = {
 	options: {
@@ -75,6 +75,41 @@ function getPatternizedMessage(beatmapInfo) {
 	return message
 }
 
+function getSearchResults(q, callback) {
+	request({
+		url: 'https://beatsaver.com/search.php?q=' + q,
+		method: 'GET',
+		headers: {
+			'User-Agent': 'BeatBot/' + version,
+			'Content-Type': 'application/json'
+		}}, function(err, res, body) {
+			if(!err && res.statusCode == 200) {
+				callback(body)
+			} else {
+				console.log('Error ' + res.statusCode)
+			}
+		}
+	)
+}
+
+function getBeatmapDetails(id, callback) {
+	request({
+		url: 'https://beatsaver.com/api.php?mode=details&id=' + id,
+		method: 'GET',
+		headers: {
+			'User-Agent': 'BeatBot/' + version,
+			'Content-Type': 'application/json'
+		}},
+		function(err, res, body) {
+			if(!err && res.statusCode == 200) {
+				callback(body)
+			} else {
+				console.log('Error ' + res.statusCode)
+			}
+		}
+	)
+}
+
 var client = new tmi.client(options)
 
 client.connect()
@@ -91,22 +126,10 @@ client.on('chat', function(channel, userstate, message, self) {
 			if(args.length > 1) {
 				if(args.length == 2) {
 					if(!isNaN(args[1]) && parseInt(Number(args[1])) == args[1] && !isNaN(parseInt(args[1], 10))) {
-						request({
-							url: 'https://beatsaver.com/api.php?mode=details&id=' + args[1],
-							method: 'GET',
-							headers: {
-								'User-Agent': 'BeatBot/' + version,
-								'Content-Type': 'application/json'
-							}},
-							function(err, res, body) {
-								if(!err && res.statusCode == 200) {
-									let beatmapInfo = JSON.parse(body)[0]
-									client.say(channel, getPatternizedMessage(beatmapInfo))
-								} else {
-									console.log('Error ' + res.statusCode)
-								}
-							}
-						)
+						getBeatmapDetails(args[1], function(body) {
+							let beatmapInfo = JSON.parse(body)[0]
+							client.say(channel, getPatternizedMessage(beatmapInfo))
+						})
 					}
 					break
 				}
@@ -114,38 +137,14 @@ client.on('chat', function(channel, userstate, message, self) {
 				for(let i = 1; i < args.length; i++) {
 					q += args[i] + '%20'
 				}
-				request({
-					url: 'https://beatsaver.com/search.php?q=' + q,
-					method: 'GET',
-					headers: {
-						'User-Agent': 'BeatBot/' + version,
-						'Content-Type': 'application/json'
-					}},
-					function(err, res, body) {
-						if(!err && res.statusCode == 200) {
-							let searchResults = JSON.parse(body)
-							let id = searchResults['hits']['hits'][0]['_id'] 
-							request({
-								url: 'https://beatsaver.com/api.php?mode=details&id=' + id,
-								method: 'GET',
-								headers: {
-									'User-Agent': 'BeatBot/' + version,
-									'Content-Type': 'application/json'
-								}},
-								function(err, res, body) {
-									if(!err && res.statusCode == 200) {
-										let beatmapInfo = JSON.parse(body)[0]
-										client.say(channel, getPatternizedMessage(beatmapInfo))
-									} else {
-										console.log('Error ' + res.statusCode)
-									}
-								}
-							)
-						} else {
-							console.log('Error ' + res.statusCode)
-						}
-					}
-				)
+				getSearchResults(q, function(body) {
+					let searchResults = JSON.parse(body)
+					let id = searchResults['hits']['hits'][0]['_id'] 
+					getBeatmapDetails(id, function(body) {
+						let beatmapInfo = JSON.parse(body)[0]
+						client.say(channel, getPatternizedMessage(beatmapInfo))
+					})
+				})
 			} else {
 				client.say(channel, userstate['display-name'] + ': Please specify a search query!')
 			}
