@@ -8,11 +8,11 @@ A Twitch.tv bot for BeatSa(b/v)er
   4. Use [this tool](https://twitchapps.com/tmi/) to get an OAuth Token for your bot.
   5. Edit lines 15, 16, and 18 of *BeatBot.js* with your bot's username, token, and *your* channel name (preceded by a *#*.) **Don't forget to save!**
   6. Open a terminal/command line.
-   * **Windows:** Press WIN+R, then type *cmd* and hit Enter.
-   * **OSX:** Press CMD+Space, then type *Terminal* and hit Enter.
-  7. Type *cd*, hit Space, then drag the folder containing the script into the console and hit Enter.
-  8. Type *npm install* and hit Enter. This installs all necessary modules.
-  9. Type *npm start* and hit Enter to start the bot.
+     * **Windows:** Press WIN+R, then type ``cmd`` and hit Enter.
+     * **OSX:** Press CMD+Space, then type ``Terminal`` and hit Enter.
+  7. Type ``cd``, hit Space, then drag the folder containing the script into the console and hit Enter.
+  8. Type ``npm install`` and hit Enter. This installs all necessary modules.
+  9. Type ``npm start`` and hit Enter to start the bot.
 
 I'll keep working on simplifying these instructions and processes, but this is it for now.
 
